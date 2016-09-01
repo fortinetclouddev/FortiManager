@@ -308,7 +308,7 @@
                     },
                     "dataDisks": [
                       {
-                        "name": "[concat(variables('virtualMachineName'),'-dataDisk')]",
+                        "name": "[concat(parameters('virtualMachineName'),'-dataDisk')]",
                         "createOption": "Empty",
                         "diskSizeGB": "[parameters('sizeOfDataDiskInGB')]",
                         "lun": 0,
