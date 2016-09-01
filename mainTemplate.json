@@ -6,11 +6,11 @@
             "type": "string"
         },
         "virtualMachineName": {
-            "type": "string",
-            "defaultValue": "Standard_D2_v2"
+            "type": "string"
         },
         "virtualMachineSize": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "Standard_D2_v2"
         },
         "adminUsername": {
             "type": "string"
@@ -109,7 +109,7 @@
             "type": "string"
         },
         "publicIpAddressType": {
-            "defaultValue": "Dynamic",
+            "defaultValue": "Static",
             "allowedValues": [
               "Dynamic",
               "Static"
