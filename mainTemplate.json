@@ -6,7 +6,8 @@
             "type": "string"
         },
         "virtualMachineName": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "Standard_D2_v2"
         },
         "virtualMachineSize": {
             "type": "string"
@@ -132,7 +133,7 @@
         },
         "artifactsBaseUrl": {
           "type": "string",
-          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/5.2.0",
+          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/1.0.0",
           "metadata": {
             "description": "Base URL of the solution template gallery package",
             "artifactsBaseUrl": ""
