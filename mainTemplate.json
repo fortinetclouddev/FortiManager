@@ -279,9 +279,9 @@
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments', 'SettingUpAvailabilitySet')]",
-                "[concat('Microsoft.Resources/deployments', 'SettingUpPublicIPandFollowing')]",
-                "[concat('Microsoft.Resources/deployments', 'SettingUpStorageAccount')]"
+                "[concat('Microsoft.Resources/deployments/', 'SettingUpAvailabilitySet')]",
+                "[concat('Microsoft.Resources/deployments/', 'SettingUpPublicIPandFollowing')]",
+                "[concat('Microsoft.Resources/deployments/', 'SettingUpStorageAccount')]"
             ],
             "properties": {
                 "osProfile": {
