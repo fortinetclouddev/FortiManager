@@ -196,7 +196,6 @@
       "adminPassword": "[basics('passwordElement')]",
       "VirtualMachineSize": "[steps('StorageNetworkConfig').vmSize]",
       "publicIPAddressName": "[steps('IPConfig').publicIpAddress.name]",
-      "publicIPAddressTypeTest": "[steps('IPConfig').publicIpAddress.type]",
       "publicIPAddressType": "[steps('IPConfig').publicIPAddressTypeElement]",
       "publicIPNewOrExistingOrNone": "[steps('IPConfig').publicIpAddress.newOrExistingOrNone]",
       "publicIPAddressResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
