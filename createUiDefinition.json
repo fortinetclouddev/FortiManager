@@ -93,7 +93,7 @@
             "label": "Virtual machine size",
             "toolTip": "The size of virtual machine to provision.",
             "recommendedSizes": [
-              "Standard_D2_v2"
+              "Standard_D2_v2",
               "Standard_D3_v2",
               "Standard_D4_v2"
             ],
@@ -152,7 +152,7 @@
               "publicIpAddress": "First public IP address resource name"
             },
             "toolTip": {
-              "publicIpAddress": "Name of the public IP address object",
+              "publicIpAddress": "Name of the public IP address object"
             },
             "defaultValue": {
               "publicIpAddressName": "FortiManager-PublicIP"
