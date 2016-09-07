@@ -6,8 +6,9 @@
       {
         "name": "VMName",
         "type": "Microsoft.Common.TextBox",
-        "label": "FortiManager set name prefix",
-        "toolTip": "This will be used to name the pair of FortiGate virtual appliances.",
+        "label": "FortiManager virtual appliance name",
+        "toolTip": "This will be used to name the FortiManager virtual appliances.",
+        "defaultValue": "FortiManager",
         "constraints": {
           "required": true,
           "regex": "^[A-Za-z0-9]{1,15}$",
@@ -17,7 +18,7 @@
       {
         "name": "adminUsername",
         "type": "Microsoft.Compute.UserNameTextBox",
-        "label": "FortiGate administrative username",
+        "label": "FortiManager administrative username",
         "toolTip": "Admin username for the FortiManager virtual appliance. Must not be 'admin' nor 'root'.",
         "osPlatform": "Linux",
         "constraints": {
@@ -32,12 +33,12 @@
           "confirmPassword": "Confirm password"
         },
         "toolTip": {
-          "password": "Administrative account password for the virtual FortiGate"
+          "password": "Administrative account password for FortiManager"
         },
         "constraints": {
           "required": true,
-          "regex": "^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\\d\\W])|(?=.*\\W)(?=.*\\d))|(?=.*\\W)(?=.*[A-Z])(?=.*\\d)).{6,72}$",
-          "validationMessage": "The password must be between 6 and 72 characters long, and contain characters from at least 3 of the following groups: uppercase characters, lowercase characters, numbers, and special characters."
+          "regex": "^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\\d\\W])|(?=.*\\W)(?=.*\\d))|(?=.*\\W)(?=.*[A-Z])(?=.*\\d)).{12,72}$",
+          "validationMessage": "The password must be between 12 and 72 characters long, and contain characters from at least 3 of the following groups: uppercase characters, lowercase characters, numbers, and special characters."
         },
         "options": {
           "hideConfirmation": false
@@ -75,7 +76,7 @@
             },
             "toolTip": {
               "virtualNetwork": "Virtual network name",
-              "subnets": "Subnets requied for the FortiGate solution"
+              "subnets": "Subnets required for the FortiManager solution"
             },
             "defaultValue": {
               "name": "FortiManagerVNet",
@@ -134,7 +135,7 @@
             "name": "storageAccount",
             "type": "Microsoft.Storage.StorageAccountSelector",
             "label": "Storage account",
-            "toolTip": "Storage Account for the disk drive of the Virtual FortiGate.",
+            "toolTip": "Storage Account for the disk drive of the Virtual FortiManager.",
             "defaultValue": {
               "type": "Standard_LRS"
             },
@@ -150,7 +151,7 @@
       },
       {
         "name": "IPConfig",
-        "label": "FortiGate IP address assignments",
+        "label": "FortiManager IP address assignments",
         "subLabel": {
           "preValidation": "Configure Public IP Address",
           "postValidation": "Done"
@@ -211,7 +212,6 @@
       "publicIPAddressType": "[steps('IPConfig').publicIPAddressTypeElement]",
       "publicIPNewOrExistingOrNone": "[steps('IPConfig').publicIpAddress.newOrExistingOrNone]",
       "publicIpAddressResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
-      "fortiGateIP1": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.startAddress]",
       "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
       "storageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
       "storageAccountNewOrExisting": "[steps('StorageNetworkConfig').storageAccount.newOrExisting]",
