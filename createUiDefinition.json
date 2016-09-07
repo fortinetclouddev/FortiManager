@@ -72,11 +72,11 @@
             "type": "Microsoft.Network.VirtualNetworkCombo",
             "label": {
               "virtualNetwork": "Virtual network",
-              "subnets": "Subnets"
+              "subnet": "Subnet"
             },
             "toolTip": {
               "virtualNetwork": "Virtual network name",
-              "subnets": "Subnets required for the FortiManager solution"
+              "subnet": "Subnet required for the FortiManager solution"
             },
             "defaultValue": {
               "name": "FortiManagerVNet",
@@ -172,12 +172,12 @@
             },
             "constraints": {
               "required": {
-                "domainNameLabel": true
+                "domainNameLabel": false
               }
             },
             "options": {
               "hideNone": true,
-              "hideDomainNameLabel": false
+              "hideDomainNameLabel": true 
             }
           },
           {
