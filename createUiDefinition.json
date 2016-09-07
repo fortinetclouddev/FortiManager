@@ -42,6 +42,18 @@
         "options": {
           "hideConfirmation": false
         }
+      },
+      {
+        "name": "sizeofDataDiskInGB",
+        "type": "Microsoft.Common.TextBox",
+        "label": "Size of FortiManager data disk measured in Gigabytes",
+        "toolTip": "This will be used to set the vhd size for the data disk.",
+        "constraints": {
+          "required": true,
+          "regex": "^([4-9][0-9]|[1-9][0-9][0-9]|10[0-2][0-3])$",
+          "validationMessage": "Only 40 - 1023 permited",
+          "defaultValue": "80"
+        }
       }
     ],
     "steps": [
@@ -191,26 +203,26 @@
       }
     ],
     "outputs": {
-      "vmNamePrefix": "[basics('VMName')]",
+      "virtualMachineName": "[basics('VMName')]",
       "adminUsername": "[basics('adminUsername')]",
       "adminPassword": "[basics('passwordElement')]",
-      "VirtualMachineSize": "[steps('StorageNetworkConfig').vmSize]",
-      "publicIPAddressName": "[steps('IPConfig').publicIpAddress.name]",
+      "virtualMachineSize": "[steps('StorageNetworkConfig').vmSize]",
+      "publicIpAddressName": "[steps('IPConfig').publicIpAddress.name]",
       "publicIPAddressType": "[steps('IPConfig').publicIPAddressTypeElement]",
       "publicIPNewOrExistingOrNone": "[steps('IPConfig').publicIpAddress.newOrExistingOrNone]",
-      "publicIPAddressResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
+      "publicIpAddressResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
       "fortiGateIP1": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.startAddress]",
-      "StorageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
-      "StorageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
+      "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
+      "storageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
       "storageAccountNewOrExisting": "[steps('StorageNetworkConfig').storageAccount.newOrExisting]",
-      "storageAccountExistingRG": "[steps('StorageNetworkConfig').storageAccount.resourceGroup]",
+      "storageAccountResourceGroup": "[steps('StorageNetworkConfig').storageAccount.resourceGroup]",
       "location": "[location()]",
-      "vnetNewOrExisting": "[steps('StorageNetworkConfig').virtualNetwork.newOrExisting]",
-      "virtualnetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
-      "virtualNetworkExistingRGName": "[steps('StorageNetworkConfig').virtualNetwork.resourceGroup]",
-      "virtualNetworkAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
-      "Subnet1Name": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
-      "Subnet1Prefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
+      "virtualNetworkNewOrExisting": "[steps('StorageNetworkConfig').virtualNetwork.newOrExisting]",
+      "virtualNetworkName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
+      "virtualNetworkResourceGroup": "[steps('StorageNetworkConfig').virtualNetwork.resourceGroup]",
+      "addressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
+      "subnetName": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
+      "subnetPrefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
     }
   }
   }

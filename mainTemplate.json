@@ -47,36 +47,8 @@
         "subnetPrefix": {
             "type": "string"
         },
-        "networkInterfaceName": {
-            "type": "string"
-        },
         "adminPassword": {
             "type": "securestring"
-        },
-        "availabilitySetNewOrExisting": {
-          "type": "string",
-          "defaultValue": "new",
-          "allowedValues": [
-            "new",
-            "existing"
-          ],
-          "metadata": {
-            "description": "Identify whether to use a new or existing Availability Set"
-          }
-        },
-        "availabilitySetName": {
-            "type": "string"
-        },
-        "availabilitySetResourceGroup":{
-          "type": "string"
-        },
-        "availabilitySetPlatformFaultDomainCount": {
-            "type": "string",
-            "defaultValue": "3"
-        },
-        "availabilitySetPlatformUpdateDomainCount": {
-            "type": "string",
-            "defaultValue": "5"
         },
         "storageAccountNewOrExisting": {
           "type": "string",
@@ -142,11 +114,11 @@
     },
     "variables": {
         "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+      "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+      "networkInterfaceName": "[concat(parameters('virtualMachineName'), '-NIC0')]",
         "storageAccountSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','storageAccount-',parameters('storageAccountNewOrExisting'),'.json')]",
         "publicIPSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','publicip-',parameters('publicIPNewOrExistingOrNone'),'.json')]",
-        "virtualNetworkSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','vnet-',parameters('virtualNetworkNewOrExisting'),'.json')]",
-        "availabilitySetSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','availset-',parameters('availabilitySetNewOrExisting'),'.json')]"
+        "virtualNetworkSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','vnet-',parameters('virtualNetworkNewOrExisting'),'.json')]"
     },
     "resources": [
       {
@@ -236,39 +208,10 @@
               "value": "[parameters('publicIpAddressResourceGroup')]"
             },
             "network_NIC_fg11_Name": {
-              "value": "[parameters('networkInterfaceName')]"
+              "value": "[variables('networkInterfaceName')]"
             },
             "subnet1Ref": {
               "value": "[reference('Microsoft.Resources/deployments/SettingUpVirtualNetwork', '2015-01-01').outputs.subnet1ID.value]"
-            }
-          }
-        }
-      },
-      {
-        "apiVersion": "2015-01-01",
-        "type": "Microsoft.Resources/deployments",
-        "name": "SettingUpAvailabilitySet",
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('availabilitySetSetupURL')]",
-            "contentVersion": "1.0.0.0"
-          },
-          "parameters": {
-            "location": {
-              "value": "[parameters('location')]"
-            },
-            "availabilitySetName": {
-              "value": "[parameters('availabilitySetName')]"
-            },
-            "availabilitySetResourceGroup": {
-              "value": "[parameters('availabilitySetResourceGroup')]"
-            },
-            "availabilitySetPlatformFaultDomainCount": {
-              "value": "[parameters('availabilitySetPlatformFaultDomainCount')]"
-            },
-            "availabilitySetPlatformUpdateDomainCount": {
-              "value": "[parameters('availabilitySetPlatformUpdateDomainCount')]"
             }
           }
         }
@@ -279,7 +222,6 @@
             "apiVersion": "2015-06-15",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', 'SettingUpAvailabilitySet')]",
                 "[concat('Microsoft.Resources/deployments/', 'SettingUpPublicIPandFollowing')]",
                 "[concat('Microsoft.Resources/deployments/', 'SettingUpStorageAccount')]"
             ],
@@ -321,7 +263,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
                         }
                     ]
                 },
@@ -330,9 +272,6 @@
                         "enabled": true,
                         "storageUri": "[concat('http://', parameters('storageAccountName'), '.blob.core.windows.net')]"
                     }
-                },
-                "availabilitySet": {
-                    "id": "[reference('Microsoft.Resources/deployments/SettingUpAvailabilitySet', '2015-01-01').outputs.availabilitySetID.value]"
                 }
             },
             "plan": {
