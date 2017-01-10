@@ -39,13 +39,15 @@
           "type": "string"
         },
         "addressPrefix": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": ""
         },
         "subnetName": {
             "type": "string"
         },
         "subnetPrefix": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": ""
         },
         "adminPassword": {
             "type": "securestring"
@@ -78,7 +80,8 @@
           }
         },
         "publicIpAddressName": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": ""
         },
         "publicIpAddressType": {
             "defaultValue": "Static",
@@ -94,13 +97,6 @@
           "defaultValue": "",
           "metadata": {
             "description": "Resource group to which the Public IP belongs."
-          }
-        },
-        "sizeOfDataDiskInGB": {
-          "type": "string",
-          "defaultValue": "80",
-          "metadata": {
-            "description": "Size of data disk in GB"
           }
         },
         "artifactsBaseUrl": {
@@ -252,7 +248,7 @@
                       {
                         "name": "[concat(parameters('virtualMachineName'),'-dataDisk')]",
                         "createOption": "Empty",
-                        "diskSizeGB": "[parameters('sizeOfDataDiskInGB')]",
+                        "diskSizeGB": "1023",
                         "lun": 0,
                         "vhd": {
                           "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('virtualMachineName'), '-datadisk', '.vhd')]"
