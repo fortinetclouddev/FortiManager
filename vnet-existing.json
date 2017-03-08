@@ -37,6 +37,9 @@
       "metadata": {
         "description": "Virtual Network subnet Address Prefix (i.e. CIDR)"
       }
+    },
+    "FortinetTags": {
+      "type": "object"
     }
   },
   "variables": {

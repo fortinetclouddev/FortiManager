@@ -39,7 +39,7 @@
       }
     },
     "FortinetTags": {
-      "type": "string"
+      "type": "object"
     }
   },
   "variables": {
