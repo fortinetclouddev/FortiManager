@@ -37,6 +37,9 @@
       "metadata": {
         "description": "Virtual Network subnet Address Prefix (i.e. CIDR)"
       }
+    },
+    "FortinetTags": {
+      "type": "string"
     }
   },
   "variables": {
@@ -47,6 +50,9 @@
   "resources": [
     {
       "apiVersion": "[variables('apiVer')]",
+      "tags": {
+       "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[parameters('vnetName')]",
       "location": "[parameters('location')]",

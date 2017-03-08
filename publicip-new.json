@@ -37,6 +37,9 @@
       "metadata": {
         "description": "NIC0 interface name"
       }
+    },
+    "FortinetTags": {
+      "type": "string"
     }
   },
   "variables": {
@@ -48,6 +51,9 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "name": "[parameters('publicIPAddressName')]",
       "apiVersion": "[variables('apiVer')]",
+      "tags": {
+       "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
       "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "[parameters('publicIPAddressType')]"
@@ -55,6 +61,9 @@
     },
     {
       "apiVersion": "[variables('apiVer')]",
+      "tags": {
+       "provider": "[toUpper(parameters('FortinetTags').provider)]"
+      },
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[parameters('network_NIC_fg11_Name')]",
       "location": "[parameters('location')]",
