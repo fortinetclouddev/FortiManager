@@ -3,54 +3,44 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "location": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+              "description": "location - same as above"
+            }
         },
-        "virtualMachineName": {
-            "type": "string"
+        "FortiManagerName": {
+            "type": "string",
+            "metadata": {
+              "description": "Name for FortiManager virtual appliance."
+            }
         },
-        "virtualMachineSize": {
+        "instanceType": {
             "type": "string",
             "defaultValue": "Standard_D2_v2"
         },
         "adminUsername": {
-            "type": "string"
-        },
-        "storageAccountName": {
-            "type": "string"
-        },
-        "storageAccountResourceGroup": {
-          "type": "string"
-        },
-        "virtualNetworkNewOrExisting": {
-          "type": "string",
-          "defaultValue": "new",
-          "allowedValues": [
-            "new",
-            "existing"
-          ],
-          "metadata": {
-            "description": "Identify whether to use a new or existing vnet"
-          }
-        },
-        "virtualNetworkName": {
-            "type": "string"
-        },
-        "virtualNetworkResourceGroup": {
-          "type": "string"
-        },
-        "addressPrefix": {
             "type": "string",
-            "defaultValue": ""
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "subnetPrefix": {
-            "type": "string",
-            "defaultValue": ""
+            "metadata": {
+              "description": "Username for the FortiManager virtual appliance."
+            }
         },
         "adminPassword": {
-            "type": "securestring"
+            "type": "securestring",
+            "metadata": {
+              "description": "Password for the FortiManager virtual appliance."
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+              "description": "Unique *lowercase* name for the Storage Account where the Virtual Machine's disks will be placed. Note, when deploying a custom template, Azure doesn't check these values for uniqueness."
+            }
+        },
+        "storageAccountResourceGroup": {
+          "type": "string",
+          "metadata": {
+            "description": "Resource Group containing storage account - or new resource group from above (if new storage account)"
+          }
         },
         "storageAccountNewOrExisting": {
           "type": "string",
@@ -67,6 +57,46 @@
             "type": "string",
             "defaultValue": "Standard_LRS"
         },
+        "vnetNewOrExisting": {
+          "type": "string",
+          "defaultValue": "new",
+          "allowedValues": [
+            "new",
+            "existing"
+          ],
+          "metadata": {
+            "description": "Identify whether to use a new or existing vnet"
+          }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+              "description": "Name of the Azure virtual network."
+            }
+        },
+        "vnetResourceGroup": {
+          "type": "string",
+          "metadata": {
+            "description": "Resource Group containing the virtual network - or new resource group from above (if new vnet)"
+          }
+        },
+        "vnetAddressPrefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+              "description": "Virtual network address space in CIDR notation, example: 10.2.0.0/16"
+            }
+        },
+        "subnetName": {
+            "type": "string"
+        },
+        "subnetPrefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+              "description": "Subnet 1 Prefix in CIDR notation, example: 10.2.1.0/24"
+            }
+        },
         "publicIPNewOrExistingOrNone": {
           "type": "string",
           "defaultValue": "new",
@@ -79,24 +109,30 @@
             "description": "Identify if to use a public IP and if so whether it is new"
           }
         },
-        "publicIpAddressName": {
+        "publicIPName": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "",
+            "metadata": {
+              "description": "Name of Public IP address resource."
+            }
         },
-        "publicIpAddressType": {
+        "publicIPType": {
             "defaultValue": "Static",
             "allowedValues": [
               "Dynamic",
               "Static"
             ],
+            "metadata": {
+              "description": "Type of public IP address - A 'dynamic' address will change during reboot or periods of inactivity"
+            },
             "type": "string"
 
         },
-        "publicIpAddressResourceGroup": {
+        "publicIPResourceGroup": {
           "type": "string",
           "defaultValue": "",
           "metadata": {
-            "description": "Resource group to which the Public IP belongs."
+            "description": "Resource Group containing the public IP - or new resource group from above (if new public IP)"
           }
         },
         "FortinetTags": {
@@ -115,12 +151,12 @@
         }
     },
     "variables": {
-        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
+        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
       "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-      "networkInterfaceName": "[concat(parameters('virtualMachineName'), '-NIC0')]",
+      "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
         "storageAccountSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','storageAccount-',parameters('storageAccountNewOrExisting'),'.json')]",
         "publicIPSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','publicip-',parameters('publicIPNewOrExistingOrNone'),'.json')]",
-        "virtualNetworkSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','vnet-',parameters('virtualNetworkNewOrExisting'),'.json')]"
+        "virtualNetworkSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','vnet-',parameters('vnetNewOrExisting'),'.json')]"
     },
     "resources": [
       {
@@ -166,13 +202,13 @@
           },
           "parameters": {
             "vnetName": {
-              "value": "[parameters('virtualNetworkName')]"
+              "value": "[parameters('vnetName')]"
             },
             "location": {
               "value": "[parameters('location')]"
             },
             "vnetAddressPrefix": {
-              "value": "[parameters('addressPrefix')]"
+              "value": "[parameters('vnetAddressPrefix')]"
             },
             "subnet1Name": {
               "value": "[parameters('subnetName')]"
@@ -181,7 +217,7 @@
               "value": "[parameters('subnetPrefix')]"
             },
             "vnetResourceGroup": {
-              "value": "[parameters('virtualNetworkResourceGroup')]"
+              "value": "[parameters('vnetResourceGroup')]"
             },
             "FortinetTags": {
               "value": "[parameters('FortinetTags')]"
@@ -207,13 +243,13 @@
               "value": "[parameters('location')]"
             },
             "publicIPAddressName": {
-              "value": "[parameters('publicIpAddressName')]"
+              "value": "[parameters('publicIPName')]"
             },
             "publicIPAddressType": {
-              "value": "[parameters('publicIpAddressType')]"
+              "value": "[parameters('publicIPType')]"
             },
             "publicIPAddressResourceGroup": {
-              "value": "[parameters('publicIpAddressResourceGroup')]"
+              "value": "[parameters('publicIPResourceGroup')]"
             },
             "network_NIC_fg11_Name": {
               "value": "[variables('networkInterfaceName')]"
@@ -228,7 +264,7 @@
         }
       },
       {
-            "name": "[parameters('virtualMachineName')]",
+            "name": "[parameters('FortiManagerName')]",
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2015-06-15",
             "tags": {
@@ -241,12 +277,12 @@
             ],
             "properties": {
                 "osProfile": {
-                    "computerName": "[parameters('virtualMachineName')]",
+                    "computerName": "[parameters('FortiManagerName')]",
                     "adminUsername": "[parameters('adminUsername')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
                 "hardwareProfile": {
-                    "vmSize": "[parameters('virtualMachineSize')]"
+                    "vmSize": "[parameters('instanceType')]"
                 },
                 "storageProfile": {
                     "imageReference": {
@@ -256,20 +292,20 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[parameters('virtualMachineName')]",
+                        "name": "[parameters('FortiManagerName')]",
                         "vhd": {
-                            "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('virtualMachineName'), '-osdisk', '.vhd')]"
+                            "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'), '-osdisk', '.vhd')]"
                         },
                         "createOption": "fromImage"
                     },
                     "dataDisks": [
                       {
-                        "name": "[concat(parameters('virtualMachineName'),'-dataDisk')]",
+                        "name": "[concat(parameters('FortiManagerName'),'-dataDisk')]",
                         "createOption": "Empty",
                         "diskSizeGB": "1023",
                         "lun": 0,
                         "vhd": {
-                          "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('virtualMachineName'), '-datadisk', '.vhd')]"
+                          "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'), '-datadisk', '.vhd')]"
                         }
                       }
                     ]
