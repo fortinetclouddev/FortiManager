@@ -143,7 +143,7 @@
         },
         "artifactsBaseUrl": {
           "type": "string",
-          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/1.0.5",
+          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/1.0.7",
           "metadata": {
             "description": "Base URL of the solution template gallery package",
             "artifactsBaseUrl": ""
@@ -151,9 +151,9 @@
         }
     },
     "variables": {
-        "vnetId": "[resourceId(resourceGroup().name,'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-      "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-      "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
+        "vnetId": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
         "storageAccountSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','storageAccount-',parameters('storageAccountNewOrExisting'),'.json')]",
         "publicIPSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','publicip-',parameters('publicIPNewOrExistingOrNone'),'.json')]",
         "virtualNetworkSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','vnet-',parameters('vnetNewOrExisting'),'.json')]"
@@ -255,7 +255,7 @@
               "value": "[variables('networkInterfaceName')]"
             },
             "subnet1Ref": {
-              "value": "[reference('Microsoft.Resources/deployments/SettingUpVirtualNetwork', '2015-01-01').outputs.subnet1ID.value]"
+              "value": "[variables('subnetRef')]"
             },
             "FortinetTags": {
               "value": "[parameters('FortinetTags')]"
@@ -294,7 +294,7 @@
                     "osDisk": {
                         "name": "[parameters('FortiManagerName')]",
                         "vhd": {
-                            "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'), '-osdisk', '.vhd')]"
+                            "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'),'-',deployment().name,'-',uniqueString(resourceGroup().id),'-osdisk.vhd')]"
                         },
                         "createOption": "fromImage"
                     },
@@ -305,7 +305,7 @@
                         "diskSizeGB": "1023",
                         "lun": 0,
                         "vhd": {
-                          "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'), '-datadisk', '.vhd')]"
+                          "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'),'-',deployment().name,'-',uniqueString(resourceGroup().id),'-datadisk.vhd')]"
                         }
                       }
                     ]
@@ -330,11 +330,5 @@
                 "product": "fortinet-fortimanager"
             }
         }
-    ],
-    "outputs": {
-        "adminUsername": {
-            "type": "string",
-            "value": "[parameters('adminUsername')]"
-        }
-    }
+    ]
 }
