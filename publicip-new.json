@@ -139,7 +139,7 @@
             }
           ]
         }
-},
+      },
     {
       "apiVersion": "[variables('apiVer')]",
       "tags": {
@@ -168,7 +168,7 @@
         }
       ],
       "networkSecurityGroup": {
-        "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',variables('NSGName')]"
+        "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',variables('NSGName'))]"
       }
     }
   }
