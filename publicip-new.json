@@ -62,6 +62,9 @@
     },
     {
         "apiVersion": "[variables('apiVer')]",
+        "tags": {
+         "provider": "[toUpper(parameters('FortinetTags').provider)]"
+        },
         "type": "Microsoft.Network/networkSecurityGroups",
         "name": "[variables('NSGName')]",
         "location": "[parameters('location')]",
@@ -172,8 +175,5 @@
       }
     }
   }
-],
-    "outputs": {
-
-    }
+]
 }
