@@ -16,7 +16,7 @@
         },
         "instanceType": {
             "type": "string",
-            "defaultValue": "Standard_D2_v2"
+            "defaultValue": "Standard_F2"
         },
         "adminUsername": {
             "type": "string",
@@ -30,33 +30,18 @@
               "description": "Password for the FortiManager virtual appliance."
             }
         },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-              "description": "Unique *lowercase* name for the Storage Account where the Virtual Machine's disks will be placed. Note, when deploying a custom template, Azure doesn't check these values for uniqueness."
-            }
-        },
-        "storageAccountResourceGroup": {
+        "FortiManagerImageVersion": {
           "type": "string",
-          "metadata": {
-            "description": "Resource Group containing storage account - or new resource group from above (if new storage account)"
-          }
-        },
-        "storageAccountNewOrExisting": {
-          "type": "string",
-          "defaultValue": "new",
-          "allowedValues": [
-            "new",
-            "existing"
+          "defaultValue": "latest",
+          "allowedValues":[
+           "5.4.4",
+           "5.6.0",
+           "latest" 
           ],
           "metadata": {
-            "description": "Identifies whether to use new or existing Storage Account"
+            "description": "Select image version"
           }
-        },
-        "storageAccountType": {
-            "type": "string",
-            "defaultValue": "Standard_LRS"
-        },
+        }
         "vnetNewOrExisting": {
           "type": "string",
           "defaultValue": "new",
@@ -109,14 +94,14 @@
             "description": "Identify if to use a public IP and if so whether it is new"
           }
         },
-        "publicIPName": {
+        "publicIPAddressName": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
               "description": "Name of Public IP address resource."
             }
         },
-        "publicIPType": {
+        "publicIPAddressType": {
             "defaultValue": "Static",
             "allowedValues": [
               "Dynamic",
@@ -143,7 +128,7 @@
         },
         "artifactsBaseUrl": {
           "type": "string",
-          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/1.0.8",
+          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/2.0.0",
           "metadata": {
             "description": "Base URL of the solution template gallery package",
             "artifactsBaseUrl": ""
@@ -151,111 +136,102 @@
         }
     },
     "variables": {
-        "vnetId": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
         "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
-        "storageAccountSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','storageAccount-',parameters('storageAccountNewOrExisting'),'.json')]",
-        "publicIPSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','publicip-',parameters('publicIPNewOrExistingOrNone'),'.json')]",
-        "virtualNetworkSetupURL": "[concat(parameters('artifactsBaseUrl'),'/','vnet-',parameters('vnetNewOrExisting'),'.json')]"
+        "networkInterface_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceName'))]",
+        "updateIPURI": "[concat(parameters('ArtifactsBaseURI'),'/update-nic.json')]",
     },
     "resources": [
       {
-        "name": "SettingUpStorageAccount",
-        "type": "Microsoft.Resources/deployments",
-        "apiVersion": "2015-01-01",
+        "condition": "[equals(parameters('vnetNewOrExisting'), 'new')]",
+        "type": "Microsoft.Network/virtualNetworks",
+        "apiVersion": "2017-09-01",
+        "name": "[parameters('vnetName')]",
+        "location": "[parameters('location')]",
         "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('storageAccountSetupURL')]",
-            "contentVersion": "1.0.0.0"
+          "addressSpace": {
+            "addressPrefixes": [
+              "[parameters('vnetAddressPrefix')]"
+            ]
           },
-          "parameters": {
-            "location": {
-              "value": "[parameters('location')]"
-            },
-            "storageAccountType": {
-              "value": "[parameters('storageAccountType')]"
-            },
-            "storageAccountName": {
-              "value": "[parameters('storageAccountName')]"
-            },
-            "storageAccountExistingRG": {
-              "value": "[parameters('storageAccountResourceGroup')]"
-            },
-            "FortinetTags": {
-              "value": "[parameters('FortinetTags')]"
+          "subnets": [
+            {
+              "name": "[parameters('subnetName')]",
+              "properties": {
+                "addressPrefix": "[parameters('subnetPrefix')]"
+              }
             }
-          }
+          ]
         }
       },
       {
-        "name": "SettingUpVirtualNetwork",
+        "condition": "[equals(parameters('publicIPNewOrExistingOrNone'), 'new')]",
+        "type": "Microsoft.Network/publicIPAddresses",
+        "apiVersion": "2017-09-01",
+        "tags": {
+          "provider": "[toUpper(parameters('FortinetTags').provider)]"
+        },
+        "name": "[parameters('publicIPAddressName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "publicIPAllocationMethod": "[parameters('publicIPAddressType')]"
+        }
+      },
+      {
+        "apiVersion": "2015-06-15",
+        "tags": {
+          "provider": "[toUpper(parameters('FortinetTags').provider)]"
+        },
+        "type": "Microsoft.Network/networkInterfaces",
+        "name": "[variables('networkInterfaceName')]",
+        "location": "[parameters('location')]",
+        "dependsOn": [
+          "[parameters('vnetName')]"
+        ],
+        "properties": {
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAllocationMethod": "Dynamic",
+                "subnet": {
+                  "id": "[variables('subnetRef')]"
+                }
+              }
+            }
+          ],
+          "enableIPForwarding": false
+        }
+      },
+      {
         "type": "Microsoft.Resources/deployments",
+        "name": "UpdateNIC",
         "apiVersion": "2015-01-01",
         "dependsOn": [
+          "[variables('networkInterfaceName')]"
         ],
         "properties": {
           "mode": "Incremental",
           "templateLink": {
-            "uri": "[variables('virtualNetworkSetupURL')]",
+            "uri": "[variables('updateIPURI')]",
             "contentVersion": "1.0.0.0"
           },
           "parameters": {
-            "vnetName": {
-              "value": "[parameters('vnetName')]"
-            },
-            "location": {
-              "value": "[parameters('location')]"
-            },
-            "vnetAddressPrefix": {
-              "value": "[parameters('vnetAddressPrefix')]"
-            },
-            "subnet1Name": {
-              "value": "[parameters('subnetName')]"
-            },
-            "subnet1AddressPrefix": {
-              "value": "[parameters('subnetPrefix')]"
-            },
-            "vnetResourceGroup": {
-              "value": "[parameters('vnetResourceGroup')]"
-            },
-            "FortinetTags": {
-              "value": "[parameters('FortinetTags')]"
-            }
-          }
-        }
-      },
-      {
-        "apiVersion": "2015-01-01",
-        "type": "Microsoft.Resources/deployments",
-        "name": "SettingUpPublicIPandFollowing",
-        "dependsOn": [
-          "[concat('Microsoft.Resources/deployments/', 'SettingUpVirtualNetwork')]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('publicIPSetupURL')]",
-            "contentVersion": "1.0.0.0"
-          },
-          "parameters": {
-            "location": {
-              "value": "[parameters('location')]"
-            },
-            "publicIPAddressName": {
-              "value": "[parameters('publicIPName')]"
-            },
-            "publicIPAddressType": {
-              "value": "[parameters('publicIPType')]"
-            },
-            "publicIPAddressResourceGroup": {
-              "value": "[parameters('publicIPResourceGroup')]"
-            },
-            "network_NIC_fg11_Name": {
+            "nicName": {
               "value": "[variables('networkInterfaceName')]"
             },
-            "subnet1Ref": {
+            "SubnetRef": {
               "value": "[variables('subnetRef')]"
+            },
+            "privateIp": {
+              "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))).ipConfigurations[0].properties.privateIPAddress]"
+            },
+            "publicIPID": {
+              "value": "[variables('publicIPID')]"
+            },
+            "publicIPNewOrExistingOrNone": {
+              "value": "[parameters('publicIPNewOrExistingOrNone')]"
             },
             "FortinetTags": {
               "value": "[parameters('FortinetTags')]"
@@ -272,8 +248,7 @@
             },
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', 'SettingUpPublicIPandFollowing')]",
-                "[concat('Microsoft.Resources/deployments/', 'SettingUpStorageAccount')]"
+                "[concat('Microsoft.Resources/deployments/', 'UpdateNIC')]",
             ],
             "properties": {
                 "osProfile": {
@@ -289,24 +264,16 @@
                         "publisher": "fortinet",
                         "offer": "fortinet-fortimanager",
                         "sku": "fortinet-fortimanager",
-                        "version": "latest"
+                        "version": "[parameters('FortiManagerImageVersion')]"
                     },
                     "osDisk": {
-                        "name": "[parameters('FortiManagerName')]",
-                        "vhd": {
-                            "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'),'-',deployment().name,'-',uniqueString(resourceGroup().id),'-osdisk.vhd')]"
-                        },
                         "createOption": "fromImage"
                     },
                     "dataDisks": [
                       {
-                        "name": "[concat(parameters('FortiManagerName'),'-dataDisk')]",
                         "createOption": "Empty",
                         "diskSizeGB": "1023",
                         "lun": 0,
-                        "vhd": {
-                          "uri": "[concat('http://',parameters('storageAccountName'),'.blob.core.windows.net/vhds/', parameters('FortiManagerName'),'-',deployment().name,'-',uniqueString(resourceGroup().id),'-datadisk.vhd')]"
-                        }
                       }
                     ]
                 },
@@ -316,12 +283,6 @@
                             "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
                         }
                     ]
-                },
-                "diagnosticsProfile": {
-                    "bootDiagnostics": {
-                        "enabled": true,
-                        "storageUri": "[concat('http://', parameters('storageAccountName'), '.blob.core.windows.net')]"
-                    }
                 }
             },
             "plan": {
