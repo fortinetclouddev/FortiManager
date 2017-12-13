@@ -138,7 +138,8 @@
     "variables": {
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
-        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
+      "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]"
+      "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name)))]",
         "networkInterface_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceName'))]",
         "updateIPURI": "[concat(parameters('ArtifactsBaseURI'),'/update-nic.json')]",
     },
@@ -179,6 +180,89 @@
         }
       },
       {
+        "apiVersion": "[variables('apiVer')]",
+        "tags": {
+          "provider": "[toUpper(parameters('FortinetTags').provider)]"
+        },
+        "type": "Microsoft.Network/networkSecurityGroups",
+        "name": "[variables('NSGName')]",
+        "location": "[parameters('location')]",
+        "properties": {
+          "securityRules": [
+            {
+              "name": "AllowSSHInbound",
+              "properties": {
+                "description": "Allow SSH In",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 100,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowHTTPInbound",
+              "properties": {
+                "description": "Allow 80 In",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "80",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 110,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowHTTPSInbound",
+              "properties": {
+                "description": "Allow 443 In",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "443",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 120,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowDevRegInbound",
+              "properties": {
+                "description": "Allow 514 in for device registration",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "514",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 130,
+                "direction": "Inbound"
+              }
+            },
+            {
+              "name": "AllowAllOutbound",
+              "properties": {
+                "description": "AllowOut",
+                "protocol": "*",
+                "sourcePortRange": "*",
+                "destinationPortRange": "*",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 105,
+                "direction": "Outbound"
+              }
+            }
+          ]
+        }
+      },
+      {
         "apiVersion": "2015-06-15",
         "tags": {
           "provider": "[toUpper(parameters('FortinetTags').provider)]"
@@ -187,7 +271,8 @@
         "name": "[variables('networkInterfaceName')]",
         "location": "[parameters('location')]",
         "dependsOn": [
-          "[parameters('vnetName')]"
+          "[parameters('vnetName')]",
+          "[variables('NSGName')]"
         ],
         "properties": {
           "ipConfigurations": [
@@ -201,6 +286,9 @@
               }
             }
           ],
+          "networkSecurityGroup": {
+            "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',variables('NSGName'))]"
+          }
           "enableIPForwarding": false
         }
       },
