@@ -41,7 +41,7 @@
           "metadata": {
             "description": "Select image version"
           }
-        }
+        },
         "vnetNewOrExisting": {
           "type": "string",
           "defaultValue": "new",
@@ -138,10 +138,10 @@
     "variables": {
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
-      "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]"
-      "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name)))]",
+        "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]",
+        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name)))]",
         "networkInterface_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceName'))]",
-        "updateIPURI": "[concat(parameters('ArtifactsBaseURI'),'/update-nic.json')]",
+        "updateIPURI": "[concat(parameters('ArtifactsBaseURI'),'/update-nic.json')]"
     },
     "resources": [
       {
@@ -288,7 +288,7 @@
           ],
           "networkSecurityGroup": {
             "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',variables('NSGName'))]"
-          }
+          },
           "enableIPForwarding": false
         }
       },
@@ -336,7 +336,7 @@
             },
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', 'UpdateNIC')]",
+                "[concat('Microsoft.Resources/deployments/', 'UpdateNIC')]"
             ],
             "properties": {
                 "osProfile": {
@@ -361,7 +361,7 @@
                       {
                         "createOption": "Empty",
                         "diskSizeGB": "1023",
-                        "lun": 0,
+                        "lun": 0
                       }
                     ]
                 },
