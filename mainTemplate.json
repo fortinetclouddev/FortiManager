@@ -126,14 +126,14 @@
           "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
           }
         },
-        "artifactsBaseUrl": {
-          "type": "string",
-          "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/2.0.0",
-          "metadata": {
-            "description": "Base URL of the solution template gallery package",
-            "artifactsBaseUrl": ""
-          }
+      "ArtifactsBaseURI": {
+        "type": "string",
+        "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/2.0.0",
+        "metadata": {
+          "description": "Base URL of the solution template gallery package",
+          "artifactsBaseUrl": ""
         }
+      }
     },
     "variables": {
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
@@ -180,7 +180,7 @@
         }
       },
       {
-        "apiVersion": "[variables('apiVer')]",
+        "apiVersion": "2015-06-15",
         "tags": {
           "provider": "[toUpper(parameters('FortinetTags').provider)]"
         },
