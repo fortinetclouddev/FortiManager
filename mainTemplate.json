@@ -139,7 +139,7 @@
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
         "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]",
-        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name)))]",
+        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name))]",
         "networkInterface_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceName'))]",
         "updateIPURI": "[concat(parameters('ArtifactsBaseURI'),'/update-nic.json')]"
     },
