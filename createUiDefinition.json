@@ -24,14 +24,14 @@
         "constraints": {
           "allowedValues": [
             {
-              "label": "FortiManager 5.6 (BYOL)",
+              "label": "FortiManager 5.6.0 (BYOL)",
               "value": {
                 "SKU": "fortinet-fortimanager",
                 "Version": "5.6.0"
               }
             },
             {
-              "label": "FortiManager 5.4 (BYOL)",
+              "label": "FortiManager 5.4.4 (BYOL)",
               "value": {
                 "SKU": "fortinet-fortimanager",
                 "Version": "5.4.4"
