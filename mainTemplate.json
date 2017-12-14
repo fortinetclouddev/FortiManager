@@ -138,6 +138,7 @@
     "variables": {
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
+        "publicIPID": "[resourceId(parameters('publicIPResourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
         "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]",
         "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name))]",
         "networkInterface_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceName'))]",
@@ -330,7 +331,7 @@
       {
             "name": "[parameters('FortiManagerName')]",
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2015-06-15",
+            "apiVersion": "2017-03-30",
             "tags": {
              "provider": "[toUpper(parameters('FortinetTags').provider)]"
             },

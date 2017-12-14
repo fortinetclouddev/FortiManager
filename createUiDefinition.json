@@ -6,13 +6,38 @@
       {
         "name": "VMName",
         "type": "Microsoft.Common.TextBox",
-        "label": "FortiManager virtual appliance name",
+        "label": "FortiManager instance name",
         "toolTip": "This will be used to name the FortiManager virtual appliances.",
         "defaultValue": "FortiManager",
         "constraints": {
           "required": true,
           "regex": "^[A-Za-z0-9]{1,15}$",
           "validationMessage": "Only alphanumeric characters are allowed, and the value must be 1 to 15 characters."
+        }
+      },
+      {
+        "name": "skuSelectorElement",
+        "type": "Microsoft.Common.OptionsGroup",
+        "label": "FortiManager Version",
+        "toolTip": "Select Select which version of FortiManager you wish to deploy",
+        "defaultValue": "5.6",
+        "constraints": {
+          "allowedValues": [
+            {
+              "label": "FortiManager 5.6 (BYOL)",
+              "value": {
+                "SKU": "fortinet-fortimanager",
+                "Version": "5.6.0"
+              }
+            },
+            {
+              "label": "FortiManager 5.4 (BYOL)",
+              "value": {
+                "SKU": "fortinet-fortimanager",
+                "Version": "5.4.4"
+              }
+            }
+          ]
         }
       },
       {
@@ -45,8 +70,8 @@
     ],
     "steps": [
       {
-        "name": "StorageNetworkConfig",
-        "label": "Network and Storage Settings",
+        "name": "NetworkInstanceConfig",
+        "label": "Network and Instance Settings",
         "subLabel": {
           "preValidation": "Configure the network and storage options",
           "postValidation": "Done"
@@ -92,24 +117,32 @@
             "label": "Virtual machine size",
             "toolTip": "The size of virtual machine to provision.",
             "recommendedSizes": [
-              "Standard_D2_v2",
-              "Standard_D3_v2",
-              "Standard_D4_v2"
+              "Standard_F2s_v2",
+              "Standard_F4s_v2"
             ],
             "constraints": {
               "allowedSizes": [
-                "Standard_A1",
-                "Standard_A2",
-                "Standard_A3",
                 "Standard_A4",
-                "Standard_D1",
                 "Standard_D2",
                 "Standard_D3",
                 "Standard_D4",
                 "Standard_D1_v2",
                 "Standard_D2_v2",
                 "Standard_D3_v2",
-                "Standard_D4_v2"
+                "Standard_D4_v2",
+                "Standard_F1",
+                "Standard_F2",
+                "Standard_F4",
+                "Standard_F8",
+                "Standard_F1s",
+                "Standard_F2s",
+                "Standard_F4s",
+                "Standard_F8s",
+                "Standard_F16s",
+                "Standard_F2s_v2",
+                "Standard_F4s_v2",
+                "Standard_F8s_v2",
+                "Standard_F16s_v2"
               ]
             },
             "osPlatform": "Linux",
@@ -119,21 +152,6 @@
               "sku": "fortinet-fortimanager"
             },
             "count": "1"
-          },
-          {
-            "name": "storageAccount",
-            "type": "Microsoft.Storage.StorageAccountSelector",
-            "label": "Storage account",
-            "toolTip": "Storage Account for the disk drive of the Virtual FortiManager.",
-            "defaultValue": {
-              "type": "Standard_LRS"
-            },
-            "constraints": {
-              "allowedTypes": [
-                "Standard_LRS",
-                "Standard_GRS"
-              ]
-            }
           }
         ]
       },
@@ -195,22 +213,19 @@
       "FortiManagerName": "[basics('VMName')]",
       "adminUsername": "[basics('adminUsername')]",
       "adminPassword": "[basics('passwordElement')]",
-      "instanceType": "[steps('StorageNetworkConfig').vmSize]",
-      "publicIPName": "[steps('IPConfig').publicIpAddress.name]",
-      "publicIPType": "[steps('IPConfig').publicIPAddressTypeElement]",
+      "FortiManagerImageVersion": "[basics('skuSelectorElement').Version]",
+      "instanceType": "[steps('NetworkInstanceConfig').vmSize]",
+      "publicIPAddressName": "[steps('IPConfig').publicIpAddress.name]",
+      "publicIPAddressType": "[steps('IPConfig').publicIPAddressTypeElement]",
       "publicIPNewOrExistingOrNone": "[steps('IPConfig').publicIpAddress.newOrExistingOrNone]",
       "publicIPResourceGroup": "[steps('IPConfig').publicIpAddress.resourceGroup]",
-      "storageAccountName": "[steps('StorageNetworkConfig').storageAccount.name]",
-      "storageAccountType": "[steps('StorageNetworkConfig').storageAccount.type]",
-      "storageAccountNewOrExisting": "[steps('StorageNetworkConfig').storageAccount.newOrExisting]",
-      "storageAccountResourceGroup": "[steps('StorageNetworkConfig').storageAccount.resourceGroup]",
       "location": "[location()]",
-      "vnetNewOrExisting": "[steps('StorageNetworkConfig').virtualNetwork.newOrExisting]",
-      "vnetName": "[steps('StorageNetworkConfig').virtualNetwork.name]",
-      "vnetResourceGroup": "[steps('StorageNetworkConfig').virtualNetwork.resourceGroup]",
-      "vnetAddressPrefix": "[steps('StorageNetworkConfig').virtualNetwork.addressPrefix]",
-      "subnetName": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.name]",
-      "subnetPrefix": "[steps('StorageNetworkConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
+      "vnetNewOrExisting": "[steps('NetworkInstanceConfig').virtualNetwork.newOrExisting]",
+      "vnetName": "[steps('NetworkInstanceConfig').virtualNetwork.name]",
+      "vnetResourceGroup": "[steps('NetworkInstanceConfig').virtualNetwork.resourceGroup]",
+      "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefix]",
+      "subnetName": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.name]",
+      "subnetPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
     }
   }
   }
