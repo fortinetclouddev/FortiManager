@@ -73,10 +73,10 @@
         "name": "NetworkInstanceConfig",
         "label": "Network and Instance Settings",
         "subLabel": {
-          "preValidation": "Configure the network and storage options",
+          "preValidation": "Configure the network and instance options",
           "postValidation": "Done"
         },
-        "bladeTitle": "Network and storage settings",
+        "bladeTitle": "Network and instance settings",
         "elements": [
           {
             "name": "virtualNetwork",
