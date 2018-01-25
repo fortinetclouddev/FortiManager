@@ -35,7 +35,7 @@
           "defaultValue": "latest",
           "allowedValues":[
            "5.4.4",
-           "5.6.0",
+           "5.6.1",
            "latest" 
           ],
           "metadata": {
@@ -82,6 +82,12 @@
               "description": "Subnet 1 Prefix in CIDR notation, example: 10.2.1.0/24"
             }
         },
+        "FortiManagerPrivateIP": {
+          "type": "string",
+          "metadata": {
+            "description": "Available IP on subnet"
+          }
+        },
         "publicIPNewOrExistingOrNone": {
           "type": "string",
           "defaultValue": "new",
@@ -125,24 +131,42 @@
         "defaultValue": {
           "provider": "6EB3B02F-50E5-4A3E-8CB8-2E129258317D"
           }
-        },
-      "ArtifactsBaseURI": {
-        "type": "string",
-        "defaultValue": "https://raw.githubusercontent.com/fortinetclouddev/FortiManager/2.0.0",
-        "metadata": {
-          "description": "Base URL of the solution template gallery package",
-          "artifactsBaseUrl": ""
         }
-      }
     },
     "variables": {
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
         "publicIPID": "[resourceId(parameters('publicIPResourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
         "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]",
-        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-',uniquestring(deployment().name))]",
-        "networkInterface_Id": "[resourceId('Microsoft.Network/networkInterfaces',variables('networkInterfaceName'))]",
-        "updateIPURI": "[concat(parameters('ArtifactsBaseURI'),'/update-nic.json')]"
+        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-')]",
+        "NICwPIP": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('FortiManagerPrivateIP')]",
+              "subnet": {
+                "id": "[variables('SubnetRef')]"
+              },
+              "publicIPAddress": {
+                "id": "[variables('publicIPID')]"
+              }
+            }
+          }
+        ],
+    
+        "NICwoPIP": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('FortiManagerPrivateIP')]",
+              "subnet": {
+                "id": "[variables('SubnetRef')]"
+              }
+            }
+          }
+        ]
     },
     "resources": [
       {
@@ -181,7 +205,7 @@
         }
       },
       {
-        "apiVersion": "2015-06-15",
+        "apiVersion": "2017-09-01",
         "tags": {
           "provider": "[toUpper(parameters('FortinetTags').provider)]"
         },
@@ -264,68 +288,18 @@
         }
       },
       {
-        "apiVersion": "2015-06-15",
+        "apiVersion": "2017-09-01",
+        "dependsOn": [
+        ],
         "tags": {
           "provider": "[toUpper(parameters('FortinetTags').provider)]"
         },
         "type": "Microsoft.Network/networkInterfaces",
         "name": "[variables('networkInterfaceName')]",
         "location": "[parameters('location')]",
-        "dependsOn": [
-          "[parameters('vnetName')]",
-          "[variables('NSGName')]"
-        ],
         "properties": {
-          "ipConfigurations": [
-            {
-              "name": "ipconfig1",
-              "properties": {
-                "privateIPAllocationMethod": "Dynamic",
-                "subnet": {
-                  "id": "[variables('subnetRef')]"
-                }
-              }
-            }
-          ],
-          "networkSecurityGroup": {
-            "id": "[resourceID('Microsoft.Network/networkSecurityGroups/',variables('NSGName'))]"
-          },
+          "ipConfigurations": "[if(equals(parameters('publicIPNewOrExistingOrNone'), 'none'), variables('NICwoPIP'), variables('NICwPIP'))]",
           "enableIPForwarding": false
-        }
-      },
-      {
-        "type": "Microsoft.Resources/deployments",
-        "name": "UpdateNIC",
-        "apiVersion": "2015-01-01",
-        "dependsOn": [
-          "[variables('networkInterfaceName')]"
-        ],
-        "properties": {
-          "mode": "Incremental",
-          "templateLink": {
-            "uri": "[variables('updateIPURI')]",
-            "contentVersion": "1.0.0.0"
-          },
-          "parameters": {
-            "nicName": {
-              "value": "[variables('networkInterfaceName')]"
-            },
-            "SubnetRef": {
-              "value": "[variables('subnetRef')]"
-            },
-            "privateIp": {
-              "value": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))).ipConfigurations[0].properties.privateIPAddress]"
-            },
-            "publicIPID": {
-              "value": "[variables('publicIPID')]"
-            },
-            "publicIPNewOrExistingOrNone": {
-              "value": "[parameters('publicIPNewOrExistingOrNone')]"
-            },
-            "FortinetTags": {
-              "value": "[parameters('FortinetTags')]"
-            }
-          }
         }
       },
       {
@@ -337,7 +311,7 @@
             },
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', 'UpdateNIC')]"
+                "[variables('networkInterfaceName')]"
             ],
             "properties": {
                 "osProfile": {

@@ -223,9 +223,10 @@
       "vnetNewOrExisting": "[steps('NetworkInstanceConfig').virtualNetwork.newOrExisting]",
       "vnetName": "[steps('NetworkInstanceConfig').virtualNetwork.name]",
       "vnetResourceGroup": "[steps('NetworkInstanceConfig').virtualNetwork.resourceGroup]",
-      "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefix]",
+      "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefixes]",
       "subnetName": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.name]",
-      "subnetPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.addressPrefix]"
+      "subnetPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
+      "FortiManagerPrivateIP": "[steps('NetworkandInstanceConfig').virtualNetwork.subnets.subnet1.startAddress]",
     }
   }
   }
