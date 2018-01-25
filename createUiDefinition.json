@@ -24,10 +24,10 @@
         "constraints": {
           "allowedValues": [
             {
-              "label": "FortiManager 5.6.0 (BYOL)",
+              "label": "FortiManager 5.6.1 (BYOL)",
               "value": {
                 "SKU": "fortinet-fortimanager",
-                "Version": "5.6.0"
+                "Version": "5.6.1"
               }
             },
             {
@@ -226,7 +226,7 @@
       "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefixes]",
       "subnetName": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.name]",
       "subnetPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
-      "FortiManagerPrivateIP": "[steps('NetworkandInstanceConfig').virtualNetwork.subnets.subnet1.startAddress]",
+      "FortiManagerPrivateIP": "[steps('NetworkandInstanceConfig').virtualNetwork.subnets.subnet1.startAddress]"
     }
   }
   }
