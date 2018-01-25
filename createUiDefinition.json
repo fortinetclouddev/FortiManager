@@ -226,7 +226,7 @@
       "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefixes]",
       "subnetName": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.name]",
       "subnetPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
-      "FortiManagerPrivateIP": "[steps('NetworkandInstanceConfig').virtualNetwork.subnets.subnet1.startAddress]"
+      "FortiManagerPrivateIP": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.startAddress]"
     }
   }
   }
