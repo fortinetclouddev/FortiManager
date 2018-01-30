@@ -20,14 +20,14 @@
         "type": "Microsoft.Common.OptionsGroup",
         "label": "FortiManager Version",
         "toolTip": "Select Select which version of FortiManager you wish to deploy",
-        "defaultValue": "5.6",
+        "defaultValue": "FortiManager 5.6.2 (BYOL)",
         "constraints": {
           "allowedValues": [
             {
-              "label": "FortiManager 5.6.1 (BYOL)",
+              "label": "FortiManager 5.6.2 (BYOL)",
               "value": {
                 "SKU": "fortinet-fortimanager",
-                "Version": "5.6.1"
+                "Version": "5.6.2"
               }
             },
             {
@@ -223,7 +223,7 @@
       "vnetNewOrExisting": "[steps('NetworkInstanceConfig').virtualNetwork.newOrExisting]",
       "vnetName": "[steps('NetworkInstanceConfig').virtualNetwork.name]",
       "vnetResourceGroup": "[steps('NetworkInstanceConfig').virtualNetwork.resourceGroup]",
-      "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefixes]",
+      "vnetAddressPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.addressPrefix]",
       "subnetName": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.name]",
       "subnetPrefix": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
       "FortiManagerPrivateIP": "[steps('NetworkInstanceConfig').virtualNetwork.subnets.subnet1.startAddress]"

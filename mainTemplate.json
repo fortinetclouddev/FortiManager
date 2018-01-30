@@ -33,11 +33,6 @@
         "FortiManagerImageVersion": {
           "type": "string",
           "defaultValue": "latest",
-          "allowedValues":[
-           "5.4.4",
-           "5.6.1",
-           "latest" 
-          ],
           "metadata": {
             "description": "Select image version"
           }
@@ -102,7 +97,7 @@
         },
         "publicIPAddressName": {
             "type": "string",
-            "defaultValue": "",
+            "defaultValue": "uselessStringInCaseNone",
             "metadata": {
               "description": "Name of Public IP address resource."
             }
@@ -121,7 +116,7 @@
         },
         "publicIPResourceGroup": {
           "type": "string",
-          "defaultValue": "",
+          "defaultValue": "uselessStringInCaseNone",
           "metadata": {
             "description": "Resource Group containing the public IP - or new resource group from above (if new public IP)"
           }
@@ -290,6 +285,9 @@
       {
         "apiVersion": "2017-09-01",
         "dependsOn": [
+          "[variables('NSGName')]",
+          "[parameters('vnetName')]",
+          "[parameters('publicIPAddressName')]"
         ],
         "tags": {
           "provider": "[toUpper(parameters('FortinetTags').provider)]"
@@ -330,12 +328,12 @@
                         "version": "[parameters('FortiManagerImageVersion')]"
                     },
                     "osDisk": {
-                        "createOption": "fromImage"
+                        "createOption": "FromImage"
                     },
                     "dataDisks": [
                       {
                         "createOption": "Empty",
-                        "diskSizeGB": "1023",
+                        "diskSizeGB": 1023,
                         "lun": 0
                       }
                     ]
