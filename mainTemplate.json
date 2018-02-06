@@ -60,7 +60,7 @@
             "description": "Resource Group containing the virtual network - or new resource group from above (if new vnet)"
           }
         },
-        "vnetAddressPrefix": {
+        "vnetAddressPrefixes": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
@@ -172,9 +172,7 @@
         "location": "[parameters('location')]",
         "properties": {
           "addressSpace": {
-            "addressPrefixes": [
-              "[parameters('vnetAddressPrefix')]"
-            ]
+            "addressPrefixes": "[parameters('vnetAddressPrefixes')]"
           },
           "subnets": [
             {
