@@ -61,11 +61,7 @@
           }
         },
         "vnetAddressPrefixes": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-              "description": "Virtual network address space in CIDR notation, example: 10.2.0.0/16"
-            }
+            "type": "array"
         },
         "subnetName": {
             "type": "string"
@@ -132,8 +128,8 @@
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
         "publicIPID": "[resourceId(parameters('publicIPResourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
-        "NSGName": "[concat(parameters('FortiManagerName'),'-NSG-',uniquestring(deployment().name))]",
-        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0-')]",
+        "NSGName": "[concat(parameters('FortiManagerName'),'-NSG')]",
+        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
         "NICwPIP": [
           {
             "name": "ipconfig1",
