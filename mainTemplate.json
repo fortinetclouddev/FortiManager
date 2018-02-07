@@ -127,37 +127,11 @@
     "variables": {
         "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetRef": "[concat(variables('vnetID'), '/subnets/', parameters('subnetName'))]",
-        "publicIPID": "[resourceId(parameters('publicIPResourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]",
+        "publicIpAddressId": {
+          "id": "[resourceId(parameters('publicIPResourceGroup'), 'Microsoft.Network/publicIPAddresses', parameters('publicIPAddressName'))]"
+        },
         "NSGName": "[concat(parameters('FortiManagerName'),'-NSG')]",
-        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]",
-        "NICwPIP": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('FortiManagerPrivateIP')]",
-              "subnet": {
-                "id": "[variables('SubnetRef')]"
-              },
-              "publicIPAddress": {
-                "id": "[variables('publicIPID')]"
-              }
-            }
-          }
-        ],
-    
-        "NICwoPIP": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[parameters('FortiManagerPrivateIP')]",
-              "subnet": {
-                "id": "[variables('SubnetRef')]"
-              }
-            }
-          }
-        ]
+        "networkInterfaceName": "[concat(parameters('FortiManagerName'), '-NIC0')]"
     },
     "resources": [
       {
@@ -290,7 +264,19 @@
         "name": "[variables('networkInterfaceName')]",
         "location": "[parameters('location')]",
         "properties": {
-          "ipConfigurations": "[if(equals(parameters('publicIPNewOrExistingOrNone'), 'none'), variables('NICwoPIP'), variables('NICwPIP'))]",
+          "ipConfigurations": [
+            {
+              "name": "ipconfig1",
+              "properties": {
+                "privateIPAllocationMethod": "Static",
+                "privateIPAddress": "[parameters('FortiManagerPrivateIP')]",
+                "subnet": {
+                  "id": "[variables('SubnetRef')]"
+                },
+                "publicIPAddress": "[if(not(equals(parameters('publicIpNewOrExistingOrNone'), 'none')), variables('publicIpAddressId') , json('null'))]"
+              }
+            }
+          ],
           "enableIPForwarding": false
         }
       },
